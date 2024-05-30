@@ -1,0 +1,9 @@
+Potrzebne do configu:
+
+Ścieżki:
+- Ścieżka do zgonów (jeśli istnieje)
+- Ostatnia ścieżka do raportu
+- Ostatnia ścieżka do zapisu
+Daty:
+- Rok tworzonej listy
+- Rok obecny

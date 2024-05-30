@@ -1,0 +1,11 @@
+{
+    "paths":{
+        "del_file_path":"zgony.py",
+        "last_load_path":"",
+        "last_save_path":""
+    },
+    "time":{
+        "cutoff_year":2017,
+        "current_year":2024
+    }
+}
