@@ -1,11 +1,9 @@
 {
-    "paths":{
-        "del_file_path":"zgony.py",
-        "last_load_path":"",
-        "last_save_path":""
-    },
-    "time":{
-        "cutoff_year":2017,
-        "current_year":2024
-    }
+    "app_version":"1.0.0",
+    "app_name":"PyKartoteka",
+    "path_del_file":"zgony_final.csv",
+    "path_last_load":"",
+    "path_last_save":"",
+    "year_cutoff":"2018",
+    "year_print":"2024"
 }
