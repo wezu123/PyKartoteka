@@ -8,14 +8,14 @@ from menu import MainMenu
 conf = Config()
 running_config = conf.read_config()
 menu = MainMenu(running_config["app_name"], running_config["app_version"])
-menu.startMainMenu()
+menu.start_main_menu()
 
 def main():
     ### INITIAL SETUP ###
     root = Tk()
     # root.withdraw()
 
-    raport_path = filedialog.askopenraport_path(filetypes=[("Plik CSV", "*.csv")])
+    raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
     zgony_path = running_config["path_del_file"]
     cutoff_year = running_config["year_cutoff"]
     print_year = running_config["year_print"]
@@ -84,7 +84,7 @@ def main():
     ### SAVING RESULT ###
     sav_name = "output-" + curtime + ".xlsx"
     try:
-        target = filedialog.asksaveasraport_path(filetypes=[("Plik Excel 2007-365", "*.xlsx")],
+        target = filedialog.asksaveasfilename(filetypes=[("Plik Excel 2007-365", "*.xlsx")],
                                             defaultextension=".xlsx", initialfile=sav_name)
         master_df.to_excel(target)
         print("--- Zapisano plik: " + target)

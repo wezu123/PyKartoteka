@@ -9,3 +9,4 @@ zgony_final.csv
 zgony.csv
 __pycache__/config.cpython-310.pyc
 __pycache__/menu.cpython-310.pyc
+.vscode/launch.json
