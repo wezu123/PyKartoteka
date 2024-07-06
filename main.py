@@ -8,7 +8,7 @@ from menu import MainMenu
 conf = Config()
 running_config = conf.read_config()
 menu = MainMenu(running_config["app_name"], running_config["app_version"])
-menu.start_main_menu()
+menu.start_window()
 
 def main():
     ### INITIAL SETUP ###
