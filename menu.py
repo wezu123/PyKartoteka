@@ -1,5 +1,6 @@
 import tkinter.filedialog
 import tkinter as tk
+from run import Run
 
 class MainMenu:
     def __init__(self, n, v):
@@ -27,6 +28,7 @@ class MainMenu:
         menu_buttons = [
             tk.Button(f_menu, text="Start", command=self.start_main),
             tk.Button(f_menu, text="Pomoc", command=self.start_help),
+            tk.Button(f_menu, text="dev.run_default", command=exit),
             tk.Button(f_menu, text="Wyjdź", command=exit),
         ]
         for button in menu_buttons:
