@@ -29,6 +29,7 @@ class MainMenu:
             tk.Button(f_menu, text="Start", command=self.start_main),
             tk.Button(f_menu, text="Pomoc", command=self.start_help),
             tk.Button(f_menu, text="dev.run_default", command=exit),
+            tk.Button(f_menu, text="dev.run_info", command=self.show_info_box),
             tk.Button(f_menu, text="Wyjdź", command=exit),
         ]
         for button in menu_buttons:
@@ -66,3 +67,12 @@ class MainMenu:
     def start_help(self):
         f_main = tk.Frame(self.root, height=400, width=800, bg="red")
         f_main.grid(column=1, row=0)
+
+    def show_info_box(self, msg="This is a debug window... what are you doing here?"):
+        info_box = tk.Toplevel(self.root)
+        info_box.grab_set()
+
+        tk.Label(info_box, text=msg).grid(column=0, row=0, padx=20, pady=20)
+        f_info_button = tk.Frame(info_box)
+        f_info_button.grid(column=0, row=1)
+        tk.Button(f_info_button, text="OK", command=info_box.destroy).grid(column=0, row=0)

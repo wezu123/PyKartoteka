@@ -12,7 +12,7 @@ menu.start_window()
 
 def main():
     ### INITIAL SETUP ###
-    root = Tk()
+    # root = Tk()
     # root.withdraw()
 
     raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
