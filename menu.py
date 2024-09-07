@@ -3,10 +3,12 @@ import tkinter as tk
 from run import Run
 
 class MainMenu:
-    def __init__(self, n, v):
-        self.name = n
-        self.version = v
+    def __init__(self, config):
+        self.config = config
+        self.name = self.config["app_name"]
+        self.version = self.config["app_version"]
         self.root = tk.Tk()
+        self.run = Run(self.config)
 
     def get_open_path(self, stringvar=None):
         path = tkinter.filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
@@ -28,7 +30,7 @@ class MainMenu:
         menu_buttons = [
             tk.Button(f_menu, text="Start", command=self.start_main),
             tk.Button(f_menu, text="Pomoc", command=self.start_help),
-            tk.Button(f_menu, text="dev.run_default", command=exit),
+            tk.Button(f_menu, text="dev.run_default", command=self.run.main_compute),
             tk.Button(f_menu, text="dev.run_info", command=self.show_info_box),
             tk.Button(f_menu, text="Wyjdź", command=exit),
         ]
