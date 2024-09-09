@@ -8,7 +8,7 @@ class MainMenu:
         self.name = self.config["app_name"]
         self.version = self.config["app_version"]
         self.root = tk.Tk()
-        self.run = Run(self.config)
+        self.run = Run(self.config, self)
 
     def get_open_path(self, stringvar=None):
         path = tkinter.filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])

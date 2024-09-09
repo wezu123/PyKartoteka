@@ -4,8 +4,9 @@ import time, os
 import pandas as pd
 
 class Run:
-    def __init__(self, config) -> None:
+    def __init__(self, config, i_menu) -> None:
         self.config = config
+        self.i_menu = i_menu
 
     def main_compute(self):
         raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
@@ -18,14 +19,18 @@ class Run:
             print("Ładowanie pliku: " + raport_path)
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
         except FileNotFoundError:
-            print("[ERR] Wskazany plik nie istnieje!")
-            exit()
+            self.i_menu.show_info_box("[ERR] Wskazany plik nie istnieje!")
+            return
+            # print("[ERR] Wskazany plik nie istnieje!")
+            # exit()
         try:
             print("Ładowanie pliku:", zgony_path)
             zgony = pd.read_csv(zgony_path, sep=",", dtype="str", header=None)
         except FileNotFoundError:
-            print("[ERR] Nie znaleziono pliku zgonów!")
-            exit()
+            self.i_menu.show_info_box("[ERR] Nie znaleziono pliku zgonów!")
+            return
+            # print("[ERR] Nie znaleziono pliku zgonów!")
+            # exit()
         print("File loaded successfully")
 
         ### COMPUTE RAPORT DATA ###
@@ -42,11 +47,11 @@ class Run:
                 error_count += 1
                 continue
 
-            # Get all contacts from 2017
+            # Get all contacts from cutoff year
             if cutoff_year + "-01-01" <= contact_date <= cutoff_year + "-12-31":
                 if data not in master_list and pesel not in zgony[0].values:
                     master_list.append(data)
-            # Get contacts more recent than 2017
+            # Get contacts more recent than cutoff year
             elif contact_date > cutoff_year + "-12-31":
                 if data not in ban_list:
                     ban_list.append(data)

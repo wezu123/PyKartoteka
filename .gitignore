@@ -1,12 +1,13 @@
 export/
 zest/
-__pycache__/tkinter.cpython-310.pyc
+__pycache__/*
+__pycache__/*
+__pycache__
 output-06-02_110222.xlsx
 output.xlsx
 output06-02_110137.xlsx
 outpux-26-01_105054.xlsx
 zgony_final.csv
 zgony.csv
-__pycache__/config.cpython-310.pyc
-__pycache__/menu.cpython-310.pyc
+Zgony2024.csv
 .vscode/launch.json
