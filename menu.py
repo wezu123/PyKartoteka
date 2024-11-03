@@ -64,7 +64,12 @@ class MainMenu:
         tk.Entry(f_main_2, width=100, textvariable=e_main_2_val).grid(column=0, row=1)
         tk.Button(f_main_2, text="Przeglądaj...", command=lambda: self.get_open_path(e_main_2_val)).grid(column=1,row=1)
 
-        f_main_3 = tk.Frame(f_main, height=100, width=800, bg="pink", highlightbackground="black", highlightthickness=1).grid(column=0, row=2)
+        f_main_3 = tk.Frame(f_main, height=100, width=800, bg="pink", highlightbackground="black", highlightthickness=1)
+        f_main_3.grid(column=0, row=2)
+        f_main_3_b1 = tk.Frame(f_main_3, height=100, width=400, bg="orange", highlightbackground="black", highlightthickness=1)
+        f_main_3_b1.grid(column=0, row=0)
+        f_main_3_b2 = tk.Frame(f_main_3, height=100, width=400, bg="purple", highlightbackground="black", highlightthickness=1)
+        f_main_3_b2.grid(column=1, row=0)
 
     def start_help(self):
         f_main = tk.Frame(self.root, height=400, width=800, bg="red")
@@ -78,3 +83,6 @@ class MainMenu:
         f_info_button = tk.Frame(info_box)
         f_info_button.grid(column=0, row=1)
         tk.Button(f_info_button, text="OK", command=info_box.destroy).grid(column=0, row=0)
+
+    def run_default(self):
+        pass
