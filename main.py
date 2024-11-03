@@ -4,8 +4,7 @@ from menu import MainMenu
 
 def main():
     conf = Config()
-    running_config = conf.read_config()
-    menu = MainMenu(running_config)
+    menu = MainMenu(conf)
     menu.start_window()
 
 main()
