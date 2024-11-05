@@ -10,9 +10,9 @@ class Run:
 
     def main_compute(self):
         raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
-        zgony_path = self.config["path_del_file"]
-        cutoff_year = self.config["year_cutoff"]
-        print_year = self.config["year_print"]
+        del_list_path = self.config.get_val("path_del_file")
+        cutoff_year = self.config.get_val("year_cutoff")
+        print_year = self.config.get_val("year_print")
 
         start_time = time.time()
         try:  
@@ -20,15 +20,15 @@ class Run:
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
         except FileNotFoundError:
             self.i_menu.show_info_box("[ERR] Wskazany plik nie istnieje!")
-            return
+            return 0
             # print("[ERR] Wskazany plik nie istnieje!")
             # exit()
         try:
-            print("Ładowanie pliku:", zgony_path)
-            zgony = pd.read_csv(zgony_path, sep=",", dtype="str", header=None)
+            print("Ładowanie pliku:", del_list_path)
+            del_list = pd.read_csv(del_list_path, sep=",", dtype="str", header=None)
         except FileNotFoundError:
             self.i_menu.show_info_box("[ERR] Nie znaleziono pliku zgonów!")
-            return
+            return 0
             # print("[ERR] Nie znaleziono pliku zgonów!")
             # exit()
         print("File loaded successfully")
@@ -49,7 +49,7 @@ class Run:
 
             # Get all contacts from cutoff year
             if cutoff_year + "-01-01" <= contact_date <= cutoff_year + "-12-31":
-                if data not in master_list and pesel not in zgony[0].values:
+                if data not in master_list and pesel not in del_list[0].values:
                     master_list.append(data)
             # Get contacts more recent than cutoff year
             elif contact_date > cutoff_year + "-12-31":
@@ -74,7 +74,8 @@ class Run:
         ### BENCHMARK END ###
         now = datetime.now()
         curtime = now.strftime("%d-%m_%H%M%S")
-        print("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        # print("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        self.i_menu.show_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
             print("--- Błędy odczytu danych: " + str(error_count))
 
@@ -84,8 +85,10 @@ class Run:
             target = filedialog.asksaveasfilename(filetypes=[("Plik Excel 2007-365", "*.xlsx")],
                                                 defaultextension=".xlsx", initialfile=sav_name)
             master_df.to_excel(target)
-            print("--- Zapisano plik: " + target)
+            # print("--- Zapisano plik: " + target)
+            self.i_menu.show_info_box("--- Zapisano plik: " + target)
             os.startfile(target)
         except ValueError:
-            print("Nie wybrano prawidłowego miejsca zapisu pliku.")
+            self.i_menu.show_info_box("[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
+            # print("Nie wybrano prawidłowego miejsca zapisu pliku.")
 
