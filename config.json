@@ -1,5 +1,5 @@
 {
-    "app_version":"1.0.0",
+    "app_version":"0.3.1",
     "app_name":"PyKartoteka",
     "path_del_file":"zgony_final.csv",
     "path_last_load":"",

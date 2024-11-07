@@ -78,6 +78,7 @@ class Run:
         self.i_menu.show_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
             print("--- Błędy odczytu danych: " + str(error_count))
+            self.i_menu.show_info_box("Błędy odczytu danych: " + str(error_count))
 
         ### SAVING RESULT ###
         sav_name = "output-" + curtime + ".xlsx"
@@ -86,7 +87,7 @@ class Run:
                                                 defaultextension=".xlsx", initialfile=sav_name)
             master_df.to_excel(target)
             # print("--- Zapisano plik: " + target)
-            self.i_menu.show_info_box("--- Zapisano plik: " + target)
+            self.i_menu.show_info_box("Zapisano plik: " + target)
             os.startfile(target)
         except ValueError:
             self.i_menu.show_info_box("[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")

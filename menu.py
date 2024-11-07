@@ -53,7 +53,7 @@ class MainMenu:
         # f_menu.grid_propagate(False)
 
         # Delete Data Frame
-        f_main_1 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground="black", highlightthickness=1, bg="yellow")
+        f_main_1 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground="grey", highlightthickness=1)
         f_main_1.grid(column=0, row=0)
         f_main_1.grid_propagate(False)
         tk.Label(f_main_1, text="Lokalizacja pliku ze zgonami:").grid(column=0, row=0, sticky="W")
@@ -63,7 +63,7 @@ class MainMenu:
         tk.Button(f_main_1, text="Przeglądaj...", command=lambda: self.get_open_path(e_main_1_val)).grid(column=1,row=1)
 
         # Source Data Frame
-        f_main_2 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground="black", highlightthickness=1)
+        f_main_2 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground="grey", highlightthickness=1)
         f_main_2.grid(column=0, row=1)
         f_main_2.grid_propagate(False)
         tk.Label(f_main_2, text="Lokalizacja raportu KS-Somed:").grid(column=0, row=0, sticky="W")
@@ -72,28 +72,32 @@ class MainMenu:
         tk.Button(f_main_2, text="Przeglądaj...", command=lambda: self.get_open_path(e_main_2_val)).grid(column=1,row=1)
 
         # Date Selectors Frame and Subframes
-        f_main_3 = tk.Frame(f_main, height=100, width=800, bg="pink", highlightbackground="black", highlightthickness=1)
+        f_main_3 = tk.Frame(f_main, height=100, width=800)
         f_main_3.grid(column=0, row=2)
         f_main_3.grid_propagate(False)
         # Delete date subframe - incomplete
-        f_main_3_b1 = tk.Frame(f_main_3, height=100, width=400, bg="orange", highlightbackground="black", highlightthickness=1)
+        f_main_3_b1 = tk.Frame(f_main_3, height=100, width=400, highlightbackground="grey", highlightthickness=1)
         f_main_3_b1.grid(column=0, row=0)
         f_main_3_b1.grid_propagate(False)
         del_date_val = tk.StringVar(f_main_3_b1, value=self.config.get_val("year_cutoff"))
-        tk.Label(f_main_3_b1, text="Rok usuwanych danych: "+del_date_val.get()).grid(column=0, row=0)
-        tk.Entry(f_main_3_b1, width=10, textvariable=del_date_val).grid(column=0, row=1)
-        tk.Button(f_main_3_b1, width=10, text="Ustaw").grid(column=0, row=2)
+        tk.Label(f_main_3_b1, text="Rok usuwanych danych: ").grid(column=0, row=0)
+        tk.Label(f_main_3_b1,textvariable=del_date_val).grid(column=1, row=0)
+        del_date_entry = tk.Entry(f_main_3_b1, width=15)
+        del_date_entry.grid(column=0, row=1)
+        del_date_entry.insert(0, del_date_val.get())
+        tk.Button(f_main_3_b1, width=15, text="Ustaw", command=lambda: self.set_date_var(del_date_entry.get(), del_date_val)).grid(column=1, row=1)
         # Source date subframe - testing selector functionality
-        f_main_3_b2 = tk.Frame(f_main_3, height=100, width=400, bg="purple", highlightbackground="black", highlightthickness=1)
+        f_main_3_b2 = tk.Frame(f_main_3, height=100, width=400, highlightbackground="grey", highlightthickness=1)
         f_main_3_b2.grid(column=1, row=0)
         f_main_3_b2.grid_propagate(False)
-        src_date = self.config.get_val("year_print")
-        src_date_val = tk.StringVar(f_main_3_b2, value=src_date)
-        tk.Label(f_main_3_b2,text="Rok wykonania raportu: "+src_date_val.get()).grid(column=0, row=0)
-        src_date_entry = tk.Entry(f_main_3_b2, width=10, textvariable=src_date_val)
-        src_date_entry.grid(sticky="W", column=0, row=1)
+        src_date_val = tk.StringVar(f_main_3_b2, value=self.config.get_val("year_print"))
+        tk.Label(f_main_3_b2,text="Rok wykonania raportu: ").grid(column=0, row=0)
+        tk.Label(f_main_3_b2,textvariable=src_date_val).grid(column=1, row=0)
+        src_date_entry = tk.Entry(f_main_3_b2, width=15)
+        src_date_entry.grid(column=0, row=1)
+        src_date_entry.insert(0, src_date_val.get())
         # tk.Button(f_main_3_b2, width=10, text="Ustaw", command=lambda: src_date_val.set(src_date_entry.get())).grid(column=0, row=2)
-        tk.Button(f_main_3_b2, width=10, text="Ustaw", command=lambda: self.set_date_var(src_date_entry.get(), src_date_val, "Rok wykonania raportu: ")).grid(sticky="W", column=0, row=2)
+        tk.Button(f_main_3_b2, width=15, text="Ustaw", command=lambda: self.set_date_var(src_date_entry.get(), src_date_val)).grid(sticky="W", column=1, row=1)
 
     # Example Function to showcase inplace frame changes
     def start_help(self):
@@ -108,7 +112,10 @@ class MainMenu:
 
     # Example function for displaying messages in windows
     def show_info_box(self, msg="This is a debug window... what are you doing here?"):
-        info_box = tk.Toplevel(self.root)
+        info_box = tk.Toplevel(self.root, takefocus=1)
+        x, y = self.root.winfo_x(), self.root.winfo_y()
+        info_box.geometry("+%d+%d" % (x+300, y+150))
+        info_box.resizable(False, False)
         info_box.grab_set()
 
         tk.Label(info_box, text=msg).grid(column=0, row=0, padx=20, pady=20)
@@ -116,5 +123,6 @@ class MainMenu:
         f_info_button.grid(column=0, row=1)
         tk.Button(f_info_button, text="OK", command=info_box.destroy).grid(column=0, row=0)
 
-    def set_date_var(self, date, var, text):
-        var.set(text+var.get())
+    def set_date_var(self, date, var):
+        var.set(date)
+        print(var.get())
