@@ -11,3 +11,6 @@ zgony_final.csv
 zgony.csv
 Zgony2024.csv
 .vscode/launch.json
+*.xlsx
+*.xls
+*.csv
