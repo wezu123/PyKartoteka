@@ -34,7 +34,7 @@ class MainMenu:
 
         ttk.Label(f_menu, text=self.name).pack(pady=10)
         menu_buttons = [
-            ttk.Button(f_menu, text="Start", command=self.start_main),
+            ttk.Button(f_menu, text="Start", command=self.start_main_frame),
             ttk.Button(f_menu, text="Ustawienia", command=self.start_settings),
             ttk.Button(f_menu, text="dev.run_default", command=self.run.main_compute),
             ttk.Button(f_menu, text="dev.run_info", command=self.show_info_box),
@@ -47,10 +47,10 @@ class MainMenu:
         exit_btn.pack(side="bottom")
         exit_btn.config(width=20) 
 
-        self.start_main() 
+        self.start_main_frame() 
         self.root.mainloop()
 
-    def start_main(self):
+    def start_main_frame(self):
         # Main Parent frame
         f_main = tk.Frame(self.root, height=400, width=800, bg="red")
         f_main.grid(column=1, row=0)
