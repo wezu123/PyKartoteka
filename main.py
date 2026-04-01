@@ -1,6 +1,6 @@
 from tkinter import filedialog, Tk
 from config import Config
-from menu import MainMenu
+from MainMenu import MainMenu
 
 def main():
     conf = Config()
