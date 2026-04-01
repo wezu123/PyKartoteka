@@ -6,11 +6,9 @@ from run import Run
 class MainMenu:
     def __init__(self, config):
         self.config = config    # Get running config from main
-        # self.name = self.config["app_name"]
         self.name = self.config.get_val("app_name")
         self.version = self.config.get_val("app_version")
         self.root = tk.Tk()
-        self.run = Run(self.config, self) # Start Run with running config and menu instances
 
         self.border_color = "lightgrey"
         self.year_low = 2000
@@ -36,7 +34,7 @@ class MainMenu:
         menu_buttons = [
             ttk.Button(f_menu, text="Start", command=self.start_main_frame),
             ttk.Button(f_menu, text="Ustawienia", command=self.start_settings),
-            ttk.Button(f_menu, text="dev.run_default", command=self.run.main_compute),
+            ttk.Button(f_menu, text="dev.run_default", command=self.run_main_compute),
             ttk.Button(f_menu, text="dev.run_info", command=self.show_info_box),
             ttk.Button(f_menu, text="Pomoc", command=self.start_help)
         ]
@@ -62,7 +60,7 @@ class MainMenu:
         f_main_1.grid(column=0, row=0)
         f_main_1.grid_propagate(False)
         ttk.Label(f_main_1, text="Lokalizacja pliku ze zgonami:").grid(column=0, row=0, sticky="W")
-        e_main_1_val = tk.StringVar(value="C:\Windows\System32")
+        e_main_1_val = tk.StringVar(value="C:/Windows/System32")
         e_main_1 = ttk.Entry(f_main_1, width=100, state="readonly", textvariable=e_main_1_val)
         e_main_1.grid(column=0, row=1)
         ttk.Button(f_main_1, text="Przeglądaj...", command=lambda: self.get_open_path(e_main_1_val)).grid(column=1,row=1)
@@ -146,3 +144,7 @@ class MainMenu:
         
         var.set(entry_val)
         print(var.get())
+
+    def run_main_compute(self):
+        self.run = Run(self.config, self) # Start Run with running config and menu instances
+        self.run.main_compute()

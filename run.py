@@ -11,10 +11,25 @@ class Run:
     def main_compute(self):
         raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
         del_list_path = self.config.get_val("path_del_file")
-        cutoff_year = self.config.get_val("year_cutoff")
-        print_year = self.config.get_val("year_print")
+        self.cutoff_year = self.config.get_val("year_cutoff")
+        self.print_year = self.config.get_val("year_print")
 
         start_time = time.time()
+
+        raport_data, del_list = self.read_compute_data(raport_path, del_list_path)
+        master_list, error_count = self.find_obsolete_records(raport_data, del_list)
+        master_df = self.format_dataframe(master_list)
+
+        now = datetime.now()
+        self.i_menu.show_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        if error_count > 0:
+            print("--- Błędy odczytu danych: " + str(error_count))
+            self.i_menu.show_info_box("Błędy odczytu danych: " + str(error_count))
+
+        self.save_result_excel(master_df)
+
+
+    def read_compute_data(self, raport_path, del_list_path):
         try:  
             print("Ładowanie pliku: " + raport_path)
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
@@ -33,6 +48,10 @@ class Run:
             # exit()
         print("File loaded successfully")
 
+        return raport_data, del_list
+
+
+    def find_obsolete_records(self, raport_data, del_list):
         ### COMPUTE RAPORT DATA ###
         master_list = []
         ban_list = []
@@ -48,11 +67,11 @@ class Run:
                 continue
 
             # Get all contacts from cutoff year
-            if cutoff_year + "-01-01" <= contact_date <= cutoff_year + "-12-31":
+            if self.cutoff_year + "-01-01" <= contact_date <= self.cutoff_year + "-12-31":
                 if data not in master_list and pesel not in del_list[0].values:
                     master_list.append(data)
             # Get contacts more recent than cutoff year
-            elif contact_date > cutoff_year + "-12-31":
+            elif contact_date > self.cutoff_year + "-12-31":
                 if data not in ban_list:
                     ban_list.append(data)
 
@@ -60,28 +79,27 @@ class Run:
             if ban_list[i] in master_list:
                 master_list.pop(master_list.index(ban_list[i]))
 
+        return master_list, error_count
+
+
+    def format_dataframe(self, master_list):
         ### EXCEL FORMATTING ###
         master_df = pd.DataFrame(data=master_list, columns=["PESEL", "Pacjent"])
         master_df[['Imię', 'Nazwisko']] = master_df.Pacjent.str.split(pat=" ", n=1, expand=True)
         del master_df["Pacjent"]
 
         master_df[["Znak teczki", "Data ostatniej wizyty", "Kategoria akt", "Liczba teczek",
-                "Miejsce przechowania akt", "Data przekazania"]] = ["5110", cutoff_year+" r.", "B 20", "", "", "30.06."+print_year]
+                "Miejsce przechowania akt", "Data przekazania"]] = ["5110", self.cutoff_year+" r.", "B 20", "", "", "30.06."+self.print_year]
         master_df.sort_values(by=['Nazwisko'], inplace=True)
         master_df.reset_index(drop=True, inplace=True)
         master_df.index += 1
 
-        ### BENCHMARK END ###
-        now = datetime.now()
-        curtime = now.strftime("%d-%m_%H%M%S")
-        # print("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
-        self.i_menu.show_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
-        if error_count > 0:
-            print("--- Błędy odczytu danych: " + str(error_count))
-            self.i_menu.show_info_box("Błędy odczytu danych: " + str(error_count))
+        return master_df
 
+
+    def save_result_excel(self, master_df):
         ### SAVING RESULT ###
-        sav_name = "output-" + curtime + ".xlsx"
+        sav_name = "output-" + datetime.now().strftime("%d-%m_%H%M%S") + ".xlsx"
         try:
             target = filedialog.asksaveasfilename(filetypes=[("Plik Excel 2007-365", "*.xlsx")],
                                                 defaultextension=".xlsx", initialfile=sav_name)
