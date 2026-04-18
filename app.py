@@ -1,5 +1,5 @@
 from tkinter import filedialog, Tk
-from service.config import Config
+from handlers.config import Config
 from static.menu import MainMenu
 
 def main():
