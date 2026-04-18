@@ -1,8 +1,3 @@
-export/
-zest/
-__pycache__/*
-__pycache__/*
-__pycache__
 output-06-02_110222.xlsx
 output.xlsx
 output06-02_110137.xlsx
@@ -10,7 +5,13 @@ outpux-26-01_105054.xlsx
 zgony_final.csv
 zgony.csv
 Zgony2024.csv
-.vscode/launch.json
+__pycache__/*
+__pycache__
+.vscode
+.venv/
+export/
+zest/
+smieci
 *.xlsx
 *.xls
 *.csv

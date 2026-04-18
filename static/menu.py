@@ -1,7 +1,7 @@
 import tkinter.filedialog
 import tkinter as tk
 from tkinter import ttk
-from run import Run
+from handlers.bot import Run
 
 class MainMenu:
     def __init__(self, config):

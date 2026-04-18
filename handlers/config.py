@@ -1,9 +1,6 @@
 import json
 from os import path
 
-# with open("config.json", "r") as read_json:
-#     test = json.load(read_json)
-#     print(test)
 class Config:
     def __init__(self):
         self.config_file = "config.json"
