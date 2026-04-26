@@ -1,12 +1,16 @@
 from tkinter import filedialog
 from datetime import datetime
-import time, os
 import pandas as pd
+import time, os
+import logging as log
+from static.gui import GUI
 
 class Run:
     def __init__(self, config, i_menu) -> None:
         self.config = config
         self.i_menu = i_menu
+
+        self.logger = log.getLogger(__name__)
 
     def main_compute(self):
         raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
@@ -21,10 +25,11 @@ class Run:
         master_df = self.format_dataframe(master_list)
 
         now = datetime.now()
-        self.i_menu.show_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        self.logger.info(f'Zadanie wykonane, czas pracy: {time.time() - start_time}s')
+        # GUI.draw_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
-            print("--- Błędy odczytu danych: " + str(error_count))
-            self.i_menu.show_info_box("Błędy odczytu danych: " + str(error_count))
+            self.logger.warning(f'Błędy odczytu danych: {str(error_count)}')
+            GUI.draw_info_box("Błędy odczytu danych: " + str(error_count))
 
         self.save_result_excel(master_df)
 
@@ -34,7 +39,7 @@ class Run:
             print("Ładowanie pliku: " + raport_path)
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
         except FileNotFoundError:
-            self.i_menu.show_info_box("[ERR] Wskazany plik nie istnieje!")
+            GUI.show_info_box("[ERR] Wskazany plik nie istnieje!")
             return 0
             # print("[ERR] Wskazany plik nie istnieje!")
             # exit()
@@ -42,7 +47,7 @@ class Run:
             print("Ładowanie pliku:", del_list_path)
             del_list = pd.read_csv(del_list_path, sep=",", dtype="str", header=None)
         except FileNotFoundError:
-            self.i_menu.show_info_box("[ERR] Nie znaleziono pliku zgonów!")
+            GUI.show_info_box("[ERR] Nie znaleziono pliku zgonów!")
             return 0
             # print("[ERR] Nie znaleziono pliku zgonów!")
             # exit()
@@ -105,9 +110,9 @@ class Run:
                                                 defaultextension=".xlsx", initialfile=sav_name)
             master_df.to_excel(target)
             # print("--- Zapisano plik: " + target)
-            self.i_menu.show_info_box("Zapisano plik: " + target)
+            GUI.draw_info_box("Zapisano plik: " + target)
             os.startfile(target)
         except ValueError:
-            self.i_menu.show_info_box("[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
+            GUI.draw_info_box("[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
             # print("Nie wybrano prawidłowego miejsca zapisu pliku.")
 
