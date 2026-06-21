@@ -1,5 +1,5 @@
+import logging
 import tkinter as tk
-import logging as log
 from tkinter import ttk
 from handlers.bot import Bot
 from static.gui import GUI
@@ -11,7 +11,7 @@ class Menu:
         self.version = self.config.get_val("app_version")
         self.root = tk.Tk()
 
-        self.logger = log.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         self.logger.addFilter(self.infobox_log)
 
         self.border_color = "lightgrey"

@@ -1,15 +1,15 @@
-from tkinter import filedialog
-from datetime import datetime
 import pandas as pd
 import time, os
-import logging as log
+import logging
+from tkinter import filedialog
+from datetime import datetime
 from static.gui import GUI
 
 class Bot:
     def __init__(self, config, root, default=False) -> None:
         self.config = config
         self.root = root.root
-        self.logger = log.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
 
     def main_compute(self, raport_path=None, del_list_path=None, print_year=None, cutoff_year=None, from_config=False):
         if from_config:
@@ -34,14 +34,19 @@ class Bot:
         try:
             raport_data, del_list = self.read_compute_data(self.raport_path, self.del_list_path)
         except FileNotFoundError:
-            self.logger.error("Nie można kontynuować bez poprawnych danych wejściowych!")
+            self.logger.exception("Nie można kontynuować bez poprawnych danych wejściowych!")
             return
 
-        master_list, error_count = self.find_obsolete_records(raport_data, del_list)
-        master_df = self.format_dataframe(master_list)
+        try:
+            master_list, error_count = self.find_obsolete_records(raport_data, del_list)
+            master_df = self.format_dataframe(master_list)
+        except (ValueError, KeyError) as e:
+            GUI.draw_info_box(self.root, "[ERR] Format przekazanych danych jest nieprawidłowy!")
+            self.logger.exception("Format przekazanych danych jest nieprawidłowy!")
+            return
 
         self.logger.info(f'Zadanie wykonane, czas pracy: {time.time() - start_time}s')
-        # GUI.draw_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        GUI.draw_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
             self.logger.warning(f'Błędy odczytu danych: {str(error_count)}')
             GUI.draw_info_box(self.root, "Błędy odczytu danych: " + str(error_count))
@@ -55,7 +60,7 @@ class Bot:
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
         except FileNotFoundError:
             GUI.draw_info_box(self.root, "[ERR] Wskazany plik nie istnieje!")
-            self.logger.error("Wskazany plik nie istnieje!")
+            self.logger.exception("Wskazany plik nie istnieje!")
             raise FileNotFoundError
         self.logger.info("Dane raportowe załadowane pomyślnie")
 
@@ -64,7 +69,7 @@ class Bot:
             del_list = pd.read_csv(del_list_path, sep=",", dtype="str", header=None)
         except FileNotFoundError:
             GUI.draw_info_box(self.root, "[ERR] Nie znaleziono pliku zgonów!")
-            self.logger.error("Nie znaleziono pliku zgonów!")
+            self.logger.exception("Nie znaleziono pliku zgonów!")
             raise FileNotFoundError
         self.logger.info("Dane zgonów załadowane pomyślnie")
 
@@ -80,7 +85,6 @@ class Bot:
         for i in range(len(raport_data)):
             pesel, patient, contact_date = raport_data[0][i], raport_data[1][i], raport_data[2][i]
             try:
-                # print(str(i) + ": " + pesel + " " + patient + " " + contact_date)
                 data = [pesel, patient]
             except TypeError:
                 error_count += 1
@@ -129,5 +133,5 @@ class Bot:
             os.startfile(target)
         except ValueError:
             GUI.draw_info_box(self.root, "[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
-            self.logger.error("Nie wybrano prawidłowego miejsca zapisu pliku!")
+            self.logger.exception("Nie wybrano prawidłowego miejsca zapisu pliku!")
 

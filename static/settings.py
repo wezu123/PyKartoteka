@@ -1,2 +1,2 @@
 #TODO
-import logging as log
+import logging

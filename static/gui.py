@@ -1,17 +1,19 @@
 from tkinter import ttk
 import tkinter as tk
 import os.path
-import logging as log
+import logging
+
+logger = logging.getLogger(__name__)
 
 class GUI:
+
     def get_open_path(root, stringvar=None):
-        logger = log.getLogger(__name__)
         open_path = tk.filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
         if os.path.isfile(open_path):
             if stringvar:
                 stringvar.set(open_path)
             return open_path
-        logger.error("Specified path does not point to a file!")
+        GUI.logger.error("Specified path does not point to a file!")
         return False
 
     # Example function for displaying messages in windows
@@ -35,7 +37,6 @@ class GUI:
         return True
 
     def set_date_var(tk, entry, var, year_low=2000, year_high=2100):
-        logger = log.getLogger(__name__)
         entry_val = entry.get()
         
         try:
@@ -43,12 +44,12 @@ class GUI:
             if(not(year_low <= entry_val <= year_high)):
                 entry.delete(0, tk.END)
                 entry.insert(0, var.get())
-                logger.error("Date value not in range!")
+                GUI.logger.error("Date value not in range for entry " + entry._name + "!")
                 return 0
         except ValueError:
             entry.delete(0, tk.END)
             entry.insert(0, var.get())
-            logger.error("Incorrect value!")
+            GUI.logger.error("Incorrect value for entry " + entry._name + "! Integer expected.")
             return 0
         
         var.set(entry_val)

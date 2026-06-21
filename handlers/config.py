@@ -1,10 +1,10 @@
 import json
+import logging
 from os import path
-import logging as log
 
 class Config:
     def __init__(self):        
-        self.logger = log.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         self.config_path = "config.json"
         self.running_config = self.read_config()
         self.unsaved_changes = False
@@ -14,7 +14,6 @@ class Config:
         if(path.isfile(self.config_path)):
             with open(self.config_path, "r") as read_json:
                 conf = json.load(read_json)
-                # print(conf)
                 return conf
         else:
             self.logger.warning(f'Could not find a config file with path "{self.config_path}"!')
@@ -28,7 +27,7 @@ class Config:
             return self.running_config[key]
         except KeyError:
             if not quiet:
-                self.logger.critical(f"Can't find key {key} in running config! Shutting down...")
+                self.logger.exception(f"Can't find key {key} in running config! Shutting down...")
                 exit()
             return ""
 
@@ -37,8 +36,5 @@ class Config:
             self.running_config[key] = val
             return True
         except KeyError:
-            self.logger.error(f'Could not find key "{key}". No changes have been made!')
+            self.logger.exception(f'Could not find key "{key}". No changes have been made!')
             return False
-
-# config = Config()
-# config.read_config()
