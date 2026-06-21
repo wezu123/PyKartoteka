@@ -1,8 +1,7 @@
-import tkinter.filedialog
 import tkinter as tk
 import logging as log
 from tkinter import ttk
-from handlers.bot import Run
+from handlers.bot import Bot
 from static.gui import GUI
 
 class Menu:
@@ -35,8 +34,8 @@ class Menu:
         menu_buttons = [
             ttk.Button(f_menu, text="Start", command=self.draw_main_frame),
             ttk.Button(f_menu, text="Ustawienia", command=self.draw_settings),
-            ttk.Button(f_menu, text="dev.run_default", command=self.run_main_compute),
-            ttk.Button(f_menu, text="dev.run_info", command=GUI.draw_info_box),
+            ttk.Button(f_menu, text="dev.run_default", command=lambda: self.run_main_compute(from_config=True)),
+            ttk.Button(f_menu, text="dev.run_info", command=lambda: GUI.draw_info_box(self.root)),
             ttk.Button(f_menu, text="Pomoc", command=self.draw_help)
         ]
         for button in menu_buttons:
@@ -55,54 +54,67 @@ class Menu:
         f_main.grid(column=1, row=0)
         f_main.grid_propagate(False)
 
-        # Delete Data Frame
-        f_main_1 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground=self.border_color, highlightthickness=1)
-        f_main_1.grid(column=0, row=0)
-        f_main_1.grid_propagate(False)
-        ttk.Label(f_main_1, text="Lokalizacja pliku ze zgonami:").grid(column=0, row=0, sticky="W")
-        e_main_1_val = tk.StringVar(value="C:/Windows/System32")
-        e_main_1 = ttk.Entry(f_main_1, width=100, state="readonly", textvariable=e_main_1_val)
-        e_main_1.grid(column=0, row=1)
-        ttk.Button(f_main_1, text="Przeglądaj...", command=lambda: GUI.get_open_path(e_main_1_val)).grid(column=1,row=1)
+        # Delete Path Frame
+        f_del_path = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground=self.border_color, highlightthickness=1)
+        f_del_path.grid(column=0, row=0)
+        f_del_path.grid_propagate(False)
+        ttk.Label(f_del_path, text="Lokalizacja pliku ze zgonami:").grid(column=0, row=0, sticky="W")
+        s_del_path = tk.StringVar(value=self.config.get_val("path_del_file"))
+        e_del_path = ttk.Entry(f_del_path, width=100, state="readonly", textvariable=s_del_path).grid(column=0, row=1)
+        ttk.Button(f_del_path, text="Przeglądaj...", command=lambda: GUI.get_open_path(self.root, s_del_path)).grid(column=1,row=1)
 
-        # Source Data Frame
-        f_main_2 = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground=self.border_color, highlightthickness=1)
-        f_main_2.grid(column=0, row=1)
-        f_main_2.grid_propagate(False)
-        ttk.Label(f_main_2, text="Lokalizacja raportu KS-Somed:").grid(column=0, row=0, sticky="W")
-        e_main_2_val = tk.StringVar()
-        ttk.Entry(f_main_2, width=100, textvariable=e_main_2_val).grid(column=0, row=1)
-        ttk.Button(f_main_2, text="Przeglądaj...", command=lambda: GUI.get_open_path(e_main_2_val)).grid(column=1,row=1)
+        # Source Path Frame
+        f_raport_path = tk.Frame(f_main, height=100, width=800, border=10, highlightbackground=self.border_color, highlightthickness=1)
+        f_raport_path.grid(column=0, row=1)
+        f_raport_path.grid_propagate(False)
+        ttk.Label(f_raport_path, text="Lokalizacja raportu KS-Somed:").grid(column=0, row=0, sticky="W")
+        s_raport_path = tk.StringVar(value=self.config.get_val("path_last_load", quiet=True))
+        e_raport_path = ttk.Entry(f_raport_path, width=100, textvariable=s_raport_path).grid(column=0, row=1)
+        ttk.Button(f_raport_path, text="Przeglądaj...", command=lambda: GUI.get_open_path(self.root, s_raport_path)).grid(column=1,row=1)
 
         # Date Selectors Frame and Subframes
-        f_main_3 = tk.Frame(f_main, height=100, width=800)
-        f_main_3.grid(column=0, row=2)
-        f_main_3.grid_propagate(False)
+        f_dates = tk.Frame(f_main, height=100, width=800)
+        f_dates.grid(column=0, row=2)
+        f_dates.grid_propagate(False)
 
         # Delete date subframe - incomplete
-        f_main_3_b1 = tk.Frame(f_main_3, height=100, width=400, highlightbackground=self.border_color, highlightthickness=1)
-        f_main_3_b1.grid(column=0, row=0)
-        f_main_3_b1.grid_propagate(False)
-        del_date_val = tk.StringVar(f_main_3_b1, value=self.config.get_val("year_cutoff"))
-        ttk.Label(f_main_3_b1, text="Rok usuwanych danych: ").grid(column=0, row=0)
-        ttk.Label(f_main_3_b1,textvariable=del_date_val).grid(column=1, row=0)
-        del_date_entry = ttk.Spinbox(f_main_3_b1, from_=2000, to=2100, width=15)
+        f_dates_b1 = tk.Frame(f_dates, height=100, width=400, highlightbackground=self.border_color, highlightthickness=1)
+        f_dates_b1.grid(column=0, row=0)
+        f_dates_b1.grid_propagate(False)
+
+        del_date_val = tk.StringVar(f_dates_b1, value=self.config.get_val("year_cutoff"))
+        ttk.Label(f_dates_b1, text="Rok usuwanych danych: ").grid(column=0, row=0)
+        ttk.Label(f_dates_b1,textvariable=del_date_val).grid(column=1, row=0)
+        del_date_entry = ttk.Spinbox(f_dates_b1, from_=2000, to=2100, width=15)
         del_date_entry.grid(column=0, row=1)
         del_date_entry.insert(0, del_date_val.get())
-        ttk.Button(f_main_3_b1, width=15, text="Ustaw", command=lambda: GUI.set_date_var(del_date_entry, del_date_val)).grid(column=1, row=1)
+        ttk.Button(f_dates_b1, width=15, text="Ustaw", command=lambda: GUI.set_date_var(self.root, del_date_entry, del_date_val)).grid(column=1, row=1)
 
         # Source date subframe - testing selector functionality
-        f_main_3_b2 = tk.Frame(f_main_3, height=100, width=400, highlightbackground=self.border_color, highlightthickness=1)
-        f_main_3_b2.grid(column=1, row=0)
-        f_main_3_b2.grid_propagate(False)
-        src_date_val = tk.StringVar(f_main_3_b2, value=self.config.get_val("year_print"))
-        ttk.Label(f_main_3_b2,text="Rok wykonania raportu: ").grid(column=0, row=0)
-        ttk.Label(f_main_3_b2,textvariable=src_date_val).grid(column=1, row=0)
-        src_date_entry = ttk.Entry(f_main_3_b2, width=15)
+        f_dates_b2 = tk.Frame(f_dates, height=100, width=400, highlightbackground=self.border_color, highlightthickness=1)
+        f_dates_b2.grid(column=1, row=0)
+        f_dates_b2.grid_propagate(False)
+        
+        src_date_val = tk.StringVar(f_dates_b2, value=self.config.get_val("year_print"))
+        ttk.Label(f_dates_b2,text="Rok wykonania raportu: ").grid(column=0, row=0)
+        ttk.Label(f_dates_b2,textvariable=src_date_val).grid(column=1, row=0)
+        src_date_entry = ttk.Spinbox(f_dates_b2, from_=2000, to=2100, width=15)
         src_date_entry.grid(column=0, row=1)
         src_date_entry.insert(0, src_date_val.get())
         # ttk.Button(f_main_3_b2, width=10, text="Ustaw", command=lambda: src_date_val.set(src_date_entry.get())).grid(column=0, row=2)
-        ttk.Button(f_main_3_b2, width=15, text="Ustaw", command=lambda: GUI.set_date_var(src_date_entry, src_date_val)).grid(sticky="W", column=1, row=1)
+        ttk.Button(f_dates_b2, width=15, text="Ustaw", command=lambda: GUI.set_date_var(self.root, src_date_entry, src_date_val)).grid(sticky="W", column=1, row=1)
+
+        # Form handling buttons
+        f_main_4 = tk.Frame(f_main, height=100, width=800)
+        f_main_4.grid(column=0, row=3)
+        f_main_4.grid_propagate(False)
+
+        ttk.Button(f_main_4, text="Uruchom", command=self.run_main_compute).grid(column=0, row=0)
+
+        self.del_path_var = s_del_path
+        self.raport_path_var = s_raport_path
+        self.src_date_val = src_date_val
+        self.del_date_val = del_date_val
 
     # Example Function to showcase inplace frame changes
     def draw_help(self):
@@ -115,6 +127,14 @@ class Menu:
     def run_default(self):
         pass
 
-    def run_main_compute(self):
-        self.run = Run(self.config, self) # Start Run with running config and menu instances
-        self.run.main_compute()
+    def run_main_compute(self, from_config=False):
+        self.bot = Bot(self.config, self) # Start Run with running config and menu instances
+        if from_config:
+            self.bot.main_compute()
+        else:
+            self.bot.main_compute(
+                raport_path=self.raport_path_var.get(),
+                del_list_path=self.del_path_var.get(),
+                print_year=self.src_date_val.get(),
+                cutoff_year=self.del_date_val.get()
+            )

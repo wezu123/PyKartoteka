@@ -23,12 +23,14 @@ class Config:
     def save_config(self):
         pass #TODO
 
-    def get_val(self, key):
+    def get_val(self, key, quiet=False):
         try:
             return self.running_config[key]
         except KeyError:
-            self.logger.critical(f"Can't find key {key} in running config! Shutting down...")
-            exit()
+            if not quiet:
+                self.logger.critical(f"Can't find key {key} in running config! Shutting down...")
+                exit()
+            return ""
 
     def set_val(self, key, val):
         try:

@@ -1,12 +1,13 @@
 from tkinter import ttk
+import tkinter as tk
 import os.path
 import logging as log
 
 class GUI:
-    def get_open_path(tk, stringvar=None):
+    def get_open_path(root, stringvar=None):
         logger = log.getLogger(__name__)
         open_path = tk.filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
-        if os.path.isfile():
+        if os.path.isfile(open_path):
             if stringvar:
                 stringvar.set(open_path)
             return open_path
@@ -14,9 +15,9 @@ class GUI:
         return False
 
     # Example function for displaying messages in windows
-    def draw_info_box(tk, msg="This is a debug window... what are you doing here?"):
-        info_box = tk.Toplevel(tk.root, takefocus=1)
-        x, y = tk.root.winfo_x(), tk.root.winfo_y()
+    def draw_info_box(root, msg="This is a debug window... what are you doing here?"):
+        info_box = tk.Toplevel(root, takefocus=1)
+        x, y = root.winfo_x(), root.winfo_y()
         info_box.geometry("+%d+%d" % (x+300, y+150))
         info_box.resizable(False, False)
         info_box.grab_set()
@@ -26,7 +27,10 @@ class GUI:
         f_info_button.grid(column=0, row=1)
         ttk.Button(f_info_button, text="OK", command=info_box.destroy).grid(column=0, row=0)
 
-        def infobox_log(self, record):
+    def draw_loading(self):
+        pass #TODO: Implement loading screen
+
+    def infobox_log(self, record):
         GUI.draw_info_box(self.root, f'[{record.levelname}] {record.getMessage()}')
         return True
 
@@ -39,7 +43,7 @@ class GUI:
             if(not(year_low <= entry_val <= year_high)):
                 entry.delete(0, tk.END)
                 entry.insert(0, var.get())
-                logger.error("Value not in range!")
+                logger.error("Date value not in range!")
                 return 0
         except ValueError:
             entry.delete(0, tk.END)

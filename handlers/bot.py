@@ -5,53 +5,68 @@ import time, os
 import logging as log
 from static.gui import GUI
 
-class Run:
-    def __init__(self, config, i_menu) -> None:
+class Bot:
+    def __init__(self, config, root, default=False) -> None:
         self.config = config
-        self.i_menu = i_menu
-
+        self.root = root.root
         self.logger = log.getLogger(__name__)
 
-    def main_compute(self):
-        raport_path = filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
-        del_list_path = self.config.get_val("path_del_file")
-        self.cutoff_year = self.config.get_val("year_cutoff")
-        self.print_year = self.config.get_val("year_print")
+    def main_compute(self, raport_path=None, del_list_path=None, print_year=None, cutoff_year=None, from_config=False):
+        if from_config:
+            self.raport_path = self.config.get_val("path_raport_file")
+            self.del_list_path = self.config.get_val("path_del_file")
+            self.print_year = self.config.get_val("year_print")
+            self.cutoff_year = self.config.get_val("year_cutoff")
+        else:
+            self.raport_path = raport_path
+            self.del_list_path = del_list_path
+            self.print_year = print_year
+            self.cutoff_year = cutoff_year
 
         start_time = time.time()
 
-        raport_data, del_list = self.read_compute_data(raport_path, del_list_path)
+        self.logger.info("Uruchomiono zadanie z parametrami:")
+        self.logger.info(f"Raport path: {self.raport_path}")
+        self.logger.info(f"Del list path: {self.del_list_path}")
+        self.logger.info(f"Print year: {self.print_year}")
+        self.logger.info(f"Cutoff year: {self.cutoff_year}")
+
+        try:
+            raport_data, del_list = self.read_compute_data(self.raport_path, self.del_list_path)
+        except FileNotFoundError:
+            self.logger.error("Nie można kontynuować bez poprawnych danych wejściowych!")
+            return
+
         master_list, error_count = self.find_obsolete_records(raport_data, del_list)
         master_df = self.format_dataframe(master_list)
 
-        now = datetime.now()
         self.logger.info(f'Zadanie wykonane, czas pracy: {time.time() - start_time}s')
         # GUI.draw_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
             self.logger.warning(f'Błędy odczytu danych: {str(error_count)}')
-            GUI.draw_info_box("Błędy odczytu danych: " + str(error_count))
+            GUI.draw_info_box(self.root, "Błędy odczytu danych: " + str(error_count))
 
         self.save_result_excel(master_df)
 
 
     def read_compute_data(self, raport_path, del_list_path):
         try:  
-            print("Ładowanie pliku: " + raport_path)
+            self.logger.info("Ładowanie pliku: " + raport_path)
             raport_data = pd.read_csv(raport_path, sep=";", dtype="str", encoding="windows-1250", header=None)
         except FileNotFoundError:
-            GUI.show_info_box("[ERR] Wskazany plik nie istnieje!")
-            return 0
-            # print("[ERR] Wskazany plik nie istnieje!")
-            # exit()
+            GUI.draw_info_box(self.root, "[ERR] Wskazany plik nie istnieje!")
+            self.logger.error("Wskazany plik nie istnieje!")
+            raise FileNotFoundError
+        self.logger.info("Dane raportowe załadowane pomyślnie")
+
         try:
-            print("Ładowanie pliku:", del_list_path)
+            self.logger.info("Ładowanie pliku: " + del_list_path)
             del_list = pd.read_csv(del_list_path, sep=",", dtype="str", header=None)
         except FileNotFoundError:
-            GUI.show_info_box("[ERR] Nie znaleziono pliku zgonów!")
-            return 0
-            # print("[ERR] Nie znaleziono pliku zgonów!")
-            # exit()
-        print("File loaded successfully")
+            GUI.draw_info_box(self.root, "[ERR] Nie znaleziono pliku zgonów!")
+            self.logger.error("Nie znaleziono pliku zgonów!")
+            raise FileNotFoundError
+        self.logger.info("Dane zgonów załadowane pomyślnie")
 
         return raport_data, del_list
 
@@ -101,7 +116,6 @@ class Run:
 
         return master_df
 
-
     def save_result_excel(self, master_df):
         ### SAVING RESULT ###
         sav_name = "output-" + datetime.now().strftime("%d-%m_%H%M%S") + ".xlsx"
@@ -109,10 +123,11 @@ class Run:
             target = filedialog.asksaveasfilename(filetypes=[("Plik Excel 2007-365", "*.xlsx")],
                                                 defaultextension=".xlsx", initialfile=sav_name)
             master_df.to_excel(target)
-            # print("--- Zapisano plik: " + target)
-            GUI.draw_info_box("Zapisano plik: " + target)
+
+            GUI.draw_info_box(self.root, "Zapisano plik: " + target)
+            self.logger.info("Zapisano plik: " + target)
             os.startfile(target)
         except ValueError:
-            GUI.draw_info_box("[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
-            # print("Nie wybrano prawidłowego miejsca zapisu pliku.")
+            GUI.draw_info_box(self.root, "[ERR] Nie wybrano prawidłowego miejsca zapisu pliku!")
+            self.logger.error("Nie wybrano prawidłowego miejsca zapisu pliku!")
 
