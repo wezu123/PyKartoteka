@@ -20,7 +20,11 @@ class Config:
             return False
         
     def save_config(self):
-        pass #TODO
+        try:
+            json.dump(self.running_config, open(self.config_path, "w"), indent=4)
+            self.logger.info(f'Config file saved to {self.config_path}.')
+        except Exception as e:
+            self.logger.exception(f'Error occurred while saving config file: {e}')
 
     def get_val(self, key, quiet=False):
         try:
@@ -34,6 +38,7 @@ class Config:
     def set_val(self, key, val):
         try:
             self.running_config[key] = val
+            self.save_config()
             return True
         except KeyError:
             self.logger.exception(f'Could not find key "{key}". No changes have been made!')

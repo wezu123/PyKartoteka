@@ -93,9 +93,18 @@ class Menu:
         if from_config:
             self.bot.main_compute()
         else:
+            raport_path=self.raport_path_var.get()
+            self.config.set_val("path_last_load", raport_path)
+            del_list_path=self.del_path_var.get()
+            self.config.set_val("path_del_file", del_list_path)
+            print_year=self.raport_date_val.get()
+            self.config.set_val("year_print", print_year)
+            cutoff_year=self.del_date_val.get()
+            self.config.set_val("year_cutoff", cutoff_year)
+
             self.bot.main_compute(
-                raport_path=self.raport_path_var.get(),
-                del_list_path=self.del_path_var.get(),
-                print_year=self.raport_date_val.get(),
-                cutoff_year=self.del_date_val.get()
+                raport_path,
+                del_list_path,
+                print_year,
+                cutoff_year
             )

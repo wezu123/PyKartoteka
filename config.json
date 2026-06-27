@@ -1,10 +1,10 @@
 {
-    "app_version":"0.4",
-    "app_name":"PyKartoteka",
-    "path_del_file":"zgony_final.csv",
-    "path_last_load":"C:/Users/kaminskim/Desktop/Wszystko/Administrator/python/PyKartoteka/data/list_ort_2018.csv",
-    "path_last_save":"",
-    "year_cutoff":"2018",
-    "year_print":"2024",
-    "dev_mode":"1"
+    "app_version": "0.4",
+    "app_name": "PyKartoteka",
+    "path_del_file": "zgony_final.csv",
+    "path_last_load": "C:/Users/Mateusz/python/PyKartoteka/zest/ZestZlec_Derma.csv",
+    "path_last_save": "",
+    "year_cutoff": "2020",
+    "year_print": "2024",
+    "dev_mode": "1"
 }

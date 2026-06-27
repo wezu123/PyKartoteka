@@ -13,7 +13,7 @@ class Bot:
 
     def main_compute(self, raport_path=None, del_list_path=None, print_year=None, cutoff_year=None, from_config=False):
         if from_config:
-            self.raport_path = self.config.get_val("path_raport_file")
+            self.raport_path = self.config.get_val("path_last_load")
             self.del_list_path = self.config.get_val("path_del_file")
             self.print_year = self.config.get_val("year_print")
             self.cutoff_year = self.config.get_val("year_cutoff")
@@ -46,7 +46,7 @@ class Bot:
             return
 
         self.logger.info(f'Zadanie wykonane, czas pracy: {time.time() - start_time}s')
-        GUI.draw_info_box("--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
+        GUI.draw_info_box(self.root, "--- Zadanie wykonane, czas pracy: %s seconds ---" % (time.time() - start_time))
         if error_count > 0:
             self.logger.warning(f'Błędy odczytu danych: {str(error_count)}')
             GUI.draw_info_box(self.root, "Błędy odczytu danych: " + str(error_count))
