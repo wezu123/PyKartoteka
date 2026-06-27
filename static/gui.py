@@ -2,7 +2,6 @@ from tkinter import ttk
 import tkinter as tk
 import os.path
 import logging
-from handlers.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +46,7 @@ class GUI:
         return stringvar
 
     def draw_date_subframe(root, col, row,label_text="Rok:", stringvar=None, year=""):
-        frame = tk.Frame(root, height=100, width=400, highlightbackground=GUI.border_color, highlightthickness=1)
+        frame = tk.Frame(root, height=100, width=400, borderwidth=10,)
         frame.grid(column=col, row=row)
         frame.grid_propagate(False)
 
@@ -63,12 +62,21 @@ class GUI:
 
         return stringvar
 
-    def draw_loading(self):
+    def draw_loading(root, msg="Ładowanie..."):
         pass #TODO: Implement loading screen
 
     def infobox_log(self, record):
         GUI.draw_info_box(self.root, f'[{record.levelname}] {record.getMessage()}')
         return True
+
+    def destroy_children(frame, nr=-1):
+        if nr > -1:
+            children = frame.winfo_children()
+            if nr < len(children):
+                children[nr].destroy()
+            return
+        for child in frame.winfo_children():
+            child.destroy()
 
     def set_date_var(entry, var, year_low=2000, year_high=2100):
         entry_val = entry.get()

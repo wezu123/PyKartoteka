@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from handlers.bot import Bot
 from static.gui import GUI
+from static.settings import Settings
 
 class Menu:
     def __init__(self, config):
@@ -11,6 +12,7 @@ class Menu:
         self.name = self.config.get_val("app_name")
         self.version = self.config.get_val("app_version")
         self.root = tk.Tk()
+        self.Settings = Settings(self.root, self.config)
 
         self.logger = logging.getLogger(__name__)
         self.logger.addFilter(self.infobox_log)
@@ -34,7 +36,7 @@ class Menu:
         ttk.Label(f_menu, text=self.name).pack(pady=10)
         menu_buttons = [
             ttk.Button(f_menu, text="Start", command=self.draw_main_frame),
-            ttk.Button(f_menu, text="Ustawienia", command=self.draw_settings),
+            ttk.Button(f_menu, text="Ustawienia", command=lambda: self.Settings.draw_settings()),
             ttk.Button(f_menu, text="dev.run_default", command=lambda: self.run_main_compute(from_config=True)),
             ttk.Button(f_menu, text="dev.run_info", command=lambda: GUI.draw_info_box(self.root)),
             ttk.Button(f_menu, text="Pomoc", command=self.draw_help)
