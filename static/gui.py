@@ -2,10 +2,12 @@ from tkinter import ttk
 import tkinter as tk
 import os.path
 import logging
+from handlers.config import Config
 
 logger = logging.getLogger(__name__)
 
 class GUI:
+    border_color = "lightgrey"
 
     def get_open_path(root, stringvar=None):
         open_path = tk.filedialog.askopenfilename(filetypes=[("Plik CSV", "*.csv")])
@@ -29,6 +31,38 @@ class GUI:
         f_info_button.grid(column=0, row=1)
         ttk.Button(f_info_button, text="OK", command=info_box.destroy).grid(column=0, row=0)
 
+    def draw_path_subframe(root, col, row, label_text="Ścieżka:", stringvar=None, path="", readonly=False):
+        frame = tk.Frame(root, height=100, width=800, border=10, highlightbackground=GUI.border_color, highlightthickness=1)
+        frame.grid(column=col, row=row)
+        frame.grid_propagate(False)
+
+        ttk.Label(frame, text=label_text).grid(column=0, row=0, sticky="W")
+        stringvar = tk.StringVar(value=path)
+        entry = ttk.Entry(frame, width=100, textvariable=stringvar)
+        entry.grid(column=0, row=1)
+        entry.config(state="readonly" if readonly else "normal")
+
+        ttk.Button(frame, text="Przeglądaj...", command=lambda: GUI.get_open_path(root, stringvar)).grid(column=1,row=1)
+
+        return stringvar
+
+    def draw_date_subframe(root, col, row,label_text="Rok:", stringvar=None, year=""):
+        frame = tk.Frame(root, height=100, width=400, highlightbackground=GUI.border_color, highlightthickness=1)
+        frame.grid(column=col, row=row)
+        frame.grid_propagate(False)
+
+        stringvar = tk.StringVar(frame, value=year)
+        ttk.Label(frame, text=label_text).grid(column=0, row=0)
+        ttk.Label(frame,textvariable=stringvar).grid(column=1, row=0)
+
+        entry = ttk.Spinbox(frame, from_=2000, to=2100, width=15)
+        entry.grid(column=0, row=1)
+        entry.insert(0, stringvar.get())
+
+        ttk.Button(frame, width=15, text="Ustaw", command=lambda: GUI.set_date_var(entry, stringvar)).grid(column=1, row=1)
+
+        return stringvar
+
     def draw_loading(self):
         pass #TODO: Implement loading screen
 
@@ -36,7 +70,7 @@ class GUI:
         GUI.draw_info_box(self.root, f'[{record.levelname}] {record.getMessage()}')
         return True
 
-    def set_date_var(tk, entry, var, year_low=2000, year_high=2100):
+    def set_date_var(entry, var, year_low=2000, year_high=2100):
         entry_val = entry.get()
         
         try:
